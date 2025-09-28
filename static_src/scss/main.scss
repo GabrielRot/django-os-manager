@@ -1,0 +1,17 @@
+@import "../../node_modules/bootstrap/scss/bootstrap";
+
+$brand: #2B7A78;
+
+body {
+  font-family: Arial, sans-serif;
+  background: #F7F7F7;
+}
+
+.navbar-custom {
+  background-color: $brand;
+  
+  .nav-link { 
+    color: #FFF;
+  }
+}
+
