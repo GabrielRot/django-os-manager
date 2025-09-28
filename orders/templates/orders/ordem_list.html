@@ -1,0 +1,36 @@
+{% extends "orders/base.html" %}
+
+{% block content %}
+<h1>Ordens de Serviço</h1>
+
+<a href="{% url 'ordem-create' %}" class="btn btn-primary mb-3">Nova Ordem</a>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Cliente</th>
+      <th>Veículo</th>
+      <th>Status</th>
+      <th>Criado em</th>
+      <th>Ações</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for ordem in ordens %}
+      <tr>
+        <td>{{ ordem.id }}</td>
+        <td>{{ ordem.cliente }}</td>
+        <td>{{ ordem.veiculo }}</td>
+        <td>{{ ordem.get_status_display }}</td>
+        <td>{{ ordem.criado_em|date:"d/m/Y H:i" }}</td>
+        <td>
+          <a href="{% url 'ordem-edit' ordem.id %}" class="btn btn-sm btn-warning">Editar</a>
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="6">Nenhuma ordem cadastrada.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}
