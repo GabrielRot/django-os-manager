@@ -17,4 +17,9 @@ urlpatterns = [
   path('veiculos/new/', views.VeiculoCreateView.as_view(), name='veiculo-create'),
   path('veiculos/editar/<uuid:pk>/', views.VeiculoUpdateView.as_view(), name='veiculo-edit'),
   path('veiculos/excluir/<uuid:pk>/', views.VeiculoDeleteView.as_view(), name='veiculo-delete'),
+  # Mecânico URLs
+  path('mecanicos/', views.MecanicoListView.as_view(), name='mecanico-list'),
+  path('mecanicos/new/', views.MecanicoCreateView.as_view(), name='mecanico-create'),
+  path('mecanicos/editar/<uuid:pk>/', views.MecanicoUpdateView.as_view(), name='mecanico-edit'),
+  path('mecanicos/excluir/<uuid:pk>/', views.MecanicoDeleteView.as_view(), name='mecanico-delete'),
 ]

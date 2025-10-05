@@ -1,0 +1,41 @@
+{% extends 'orders/base.html' %}
+{% block title %}Mecânicos - OS Manager{% endblock %}
+{% block content %}
+  <h1>Lista de Mecânicos</h1>
+  <a href="{% url 'mecanico-create' %}" class="btn btn-primary">Novo Mecânico</a>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for mecanico in mecanicos %}
+        <tr>
+          <td>{{ mecanico.id }}</td>
+          <td>{{ mecanico.nome }}</td>
+          <td>{{ mecanico.email }}</td>
+          <td>
+            <a href="{% url 'mecanico-edit' mecanico.id %}" class="btn btn-warning">Editar</a>
+            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-delete-url="{% url 'mecanico-delete' mecanico.id %}" onclick="setActionFormDeleteModal(this)">Excluir</button>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="4">
+            <div class="no-data-found-table" role="alert">
+              <span class="fa fa-search" style="font-size: inherit !important;"></span>
+              <span>Nenhum mecânico encontrado.</span>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+{% block modal_title %}Confirmar Exclusão{% endblock %}
+{% block modal_body %}Tem certeza que deseja excluir este mecânico?{% endblock %}
+{% block btn_type %}danger{% endblock %}

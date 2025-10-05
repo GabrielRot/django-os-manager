@@ -110,3 +110,38 @@ class VeiculoDeleteView(UpdateView):
     veiculo = get_object_or_404(Veiculo, pk=pk)
     veiculo.delete()
     return redirect('veiculo-list')
+  
+## Mecânicos Views
+class MecanicoListView(ListView):
+  model               = Mecanico
+  template_name       = 'orders/mecanicos_list.html'
+  context_object_name = 'mecanicos'
+  ordering            = ['-criado_em']
+  
+class MecanicoCreateView(CreateView):
+  model         = Mecanico
+  fields        = ['nome', 'email']
+  template_name = 'orders/mecanicos_form.html'
+  success_url   = reverse_lazy('mecanico-list')
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['is_edit'] = False
+    return context
+  
+class MecanicoUpdateView(UpdateView):
+  models        = Mecanico
+  fields        = ['nome', 'email']
+  template_name = 'orders/mecanicos_form.html'
+  success_url   = reverse_lazy('mecanico-list')
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['is_edit'] = True
+    return context
+  
+class MecanicoDeleteView(UpdateView):
+  def post(self, request, pk):
+    mecanico = get_object_or_404(Mecanico, pk=pk)
+    mecanico.delete()
+    return redirect('mecanico-list')
