@@ -7244,7 +7244,7 @@ textarea.form-control-lg {
   display: table-cell !important;
 }
 
-.d-flex {
+.d-flex, .no-data-found-table {
   display: flex !important;
 }
 
@@ -7666,7 +7666,7 @@ textarea.form-control-lg {
   justify-content: flex-end !important;
 }
 
-.justify-content-center {
+.justify-content-center, .no-data-found-table {
   justify-content: center !important;
 }
 
@@ -7690,7 +7690,7 @@ textarea.form-control-lg {
   align-items: flex-end !important;
 }
 
-.align-items-center {
+.align-items-center, .no-data-found-table {
   align-items: center !important;
 }
 
@@ -11865,18 +11865,25 @@ body {
 }
 
 .navbar-custom {
-  background-color: #37a09c;
+  background-color: #a74ad3;
 }
 .navbar-custom .nav-link {
   color: #FFF;
 }
 
 .btn-primary {
-  background-color: #37a09c !important;
+  background-color: #a74ad3 !important;
   border: none;
 }
 .btn-primary:hover {
-  background-color: rgb(41.9534883721, 122.0465116279, 118.9953488372) !important;
+  background-color: rgb(142.48, 45.76, 188.24) !important;
+}
+
+.no-data-found-table {
+  font-size: 18px !important;
+  color: #636363 !important;
+  gap: 10px;
+  height: 100px !important;
 }
 
 /*# sourceMappingURL=main.css.map */

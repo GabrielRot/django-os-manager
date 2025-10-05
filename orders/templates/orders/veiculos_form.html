@@ -1,0 +1,110 @@
+{% extends 'orders/base.html' %}
+{% block title %}Veículos - OS Manager{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h2>
+      {% if is_edit %}
+        Editar Veículo #{{ form.instance.pk }}
+      {% else %}
+        Novo Veículo
+      {% endif %}
+    </h2>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="id_marca" class="form-label">Marca</label>
+        <input 
+          type="text" 
+          name="marca" 
+          id="id_marca"
+          class="form-control {% if form.marca.errors %}is-invalid{% endif %}" 
+          value="{{ form.marca.value|default:'' }}"
+          maxlength="50"
+          required
+        >
+        {% for error in form.marca.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_modelo" class="form-label">Modelo</label>
+        <input 
+          type="text" 
+          name="modelo" 
+          id="id_modelo"
+          class="form-control {% if form.modelo.errors %}is-invalid{% endif %}" 
+          value="{{ form.modelo.value|default:'' }}"
+          maxlength="50"
+          required
+        >
+        {% for error in form.modelo.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_ano" class="form-label">Ano</label>
+        <input 
+          type="number" 
+          name="ano" 
+          id="id_ano"
+          class="form-control {% if form.ano.errors %}is-invalid{% endif %}" 
+          value="{{ form.ano.value|default:'' }}"
+          min="1900"
+          max="2999"
+          required
+        >
+        {% for error in form.ano.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_placa" class="form-label">Placa</label>
+        <input 
+          type="text" 
+          name="placa" 
+          id="id_placa"
+          class="form-control {% if form.placa.errors %}is-invalid{% endif %}" 
+          value="{{ form.placa.value|default:'' }}"
+          maxlength="20"
+          required
+        >
+        {% for error in form.placa.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_cliente" class="form-label">Cliente</label>
+        <select
+          name="cliente"
+          id="id_cliente"
+          class="form-select {% if form.cliente.errors %}is-invalid{% endif %}"
+          required
+        >
+          <option value="" disabled {% if not form.cliente.value %}selected{% endif %}>Selecione um cliente</option>
+          {% for cliente in form.cliente.field.queryset %}
+            <option 
+              value="{{ cliente.id }}"
+              {% if form.cliente.id == cliente.id|stringformat:"s" %}selected{% endif %}
+            >
+              {{ cliente.nome }}
+            </option>
+          {% endfor %}
+        </select>
+        {% for error in form.cliente.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        {% if is_edit %}Atualizar{% else %}Criar{% endif %}
+      </button>
+      <a href="{% url 'veiculo-list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+  </div>
+{% endblock %}

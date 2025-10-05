@@ -1,6 +1,6 @@
 @import "../../node_modules/bootstrap/scss/bootstrap";
 
-$brand: #37a09c;
+$brand: #a74ad3;
 
 body {
   font-family: Arial, sans-serif;
@@ -22,4 +22,15 @@ body {
   &:hover {
     background-color: darken($brand, 10%) !important;
   }
+}
+
+.no-data-found-table {
+  font-size: 18px !important;
+  color: #636363 !important;
+  gap: 10px;
+  height: 100px !important;
+
+  @extend .d-flex;
+  @extend .justify-content-center;
+  @extend .align-items-center;
 }

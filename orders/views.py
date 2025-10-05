@@ -75,3 +75,38 @@ class ClienteDeleteView(UpdateView):
     cliente = get_object_or_404(Cliente, pk=pk)
     cliente.delete()
     return redirect('cliente-list')
+  
+#Veiculos Views
+class VeiculoListView(ListView):
+  model               = Veiculo
+  template_name       = 'orders/veiculos_list.html'
+  context_object_name = 'veiculos'
+  ordering            = ['-criado_em']
+
+class VeiculoCreateView(CreateView):
+  model         = Veiculo
+  fields        = ['cliente', 'marca', 'modelo', 'ano', 'placa'] 
+  template_name = 'orders/veiculos_form.html'
+  success_url   = reverse_lazy('veiculo-list')
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['is_edit'] = False
+    return context
+
+class VeiculoUpdateView(UpdateView):
+  model         = Veiculo
+  fields        = ['cliente', 'marca', 'modelo', 'ano', 'placa']
+  template_name = 'orders/veiculos_form.html'
+  success_url   = reverse_lazy('veiculo-list')
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['is_edit'] = True
+    return context
+  
+class VeiculoDeleteView(UpdateView):
+  def post(self, request, pk):
+    veiculo = get_object_or_404(Veiculo, pk=pk)
+    veiculo.delete()
+    return redirect('veiculo-list')

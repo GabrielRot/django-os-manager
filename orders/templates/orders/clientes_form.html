@@ -1,5 +1,5 @@
 {% extends "orders/base.html" %}
-
+{% block title %}Clientes - OS Manager{% endblock %}
 {% block content %}
   <div class="container">
     <h2>
@@ -12,8 +12,6 @@
 
     <form method="POST" novalidate>
       {% csrf_token %}
-      <!-- Campos renderizados automáticamente. Comentário by me mesmo e não por uma I.A -->
-      <!-- {{ form.as_p }} -->
 
       <div class="mb-3">
         <label for="id_nome" class="form-label">Nome</label>

@@ -1,0 +1,53 @@
+{% extends 'orders/base.html' %}
+{% block title %}Veículos - OS Manager{% endblock %}
+
+{% block content %}
+  <h2 class="mb-4">Lista de Veículos</h2>
+  <a href="{% url 'veiculo-create' %}" class="btn btn-primary mb-3">
+    <span class="fa fa-plus"></span>
+    Adicionar Veículo
+  </a>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Placa</th>
+        <th>Modelo</th>
+        <th>Ano</th>
+        <th>Cliente</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for veiculo in veiculos %}
+        <tr>
+          <td>{{ veiculo.placa }}</td>
+          <td>{{ veiculo.modelo }}</td>
+          <td>{{ veiculo.ano }}</td>
+          <td>{{ veiculo.cliente.nome }}</td>
+          <td>
+            <a href="{% url 'veiculo-edit' veiculo.pk %}" class="btn btn-sm btn-warning">
+              <span class="fa fa-edit"></span>
+              <span>Editar</span>
+            </a>
+            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-url="{% url 'veiculo-delete' veiculo.id %}" onclick="setActionFormDeleteModal(this)">
+              <span class="fa fa-trash"></span>
+              Excluir
+            </button>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5">
+            <div class="no-data-found-table" role="alert">
+              <span class="fa fa-search" style="font-size: inherit !important;"></span>
+              <span>Nenhum veículo encontrado.</span>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+{% block modal_title %}Excluir Veículo{% endblock %}
+{% block modal_body %}Tem certeza que deseja excluir este veículo?{% endblock %}
+{% block btn_type %}danger{% endblock %}

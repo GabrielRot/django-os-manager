@@ -1,5 +1,5 @@
 {% extends "orders/base.html" %}
-{% load static %}
+{% block title %}Ordens de Serviço - OS Manager{% endblock %}
 {% block content %}
 <h1>Ordens de Serviço</h1>
 
@@ -39,7 +39,10 @@
       </td>
       </tr>
     {% empty %}
-      <tr><td colspan="6">Nenhuma ordem cadastrada.</td></tr>
+       <div class="no-data-found-table" role="alert">
+          <span class="fa fa-search" style="font-size: inherit !important;"></span>
+          <span>Nenhuma ordem encontrada.</span>
+        </div>
     {% endfor %}
   </tbody>
 </table>
