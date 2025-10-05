@@ -11865,8 +11865,18 @@ body {
 }
 
 .navbar-custom {
-  background-color: #2B7A78;
+  background-color: #37a09c;
 }
 .navbar-custom .nav-link {
   color: #FFF;
 }
+
+.btn-primary {
+  background-color: #37a09c !important;
+  border: none;
+}
+.btn-primary:hover {
+  background-color: rgb(41.9534883721, 122.0465116279, 118.9953488372) !important;
+}
+
+/*# sourceMappingURL=main.css.map */

@@ -1,9 +1,12 @@
 {% extends "orders/base.html" %}
-
+{% load static %}
 {% block content %}
 <h1>Ordens de Serviço</h1>
 
-<a href="{% url 'ordem-create' %}" class="btn btn-primary mb-3">Nova Ordem</a>
+<a href="{% url 'ordem-create' %}" class="btn btn-primary mb-3">
+  <span class="fa fa-plus"></span>
+  Nova ordem de serviço
+</a>
 
 <table class="table table-striped">
   <thead>
@@ -25,12 +28,20 @@
         <td>{{ ordem.get_status_display }}</td>
         <td>{{ ordem.criado_em|date:"d/m/Y H:i" }}</td>
         <td>
-          <a href="{% url 'ordem-edit' ordem.id %}" class="btn btn-sm btn-warning">Editar</a>
-        </td>
+          <a href="{% url 'ordem-edit' ordem.id %}" class="btn btn-sm btn-warning">
+            <span class="fa fa-edit"></span>
+            Editar
+          </a>
+          <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-url="{% url 'ordem-delete' ordem.pk %}" onclick="setActionFormDeleteModal(this)">
+            <span class="fa fa-trash"></span>
+            Excluir
+          </button>
+      </td>
       </tr>
     {% empty %}
       <tr><td colspan="6">Nenhuma ordem cadastrada.</td></tr>
     {% endfor %}
   </tbody>
 </table>
+<script src="{% static 'js/ordem-list.js' %}"></script>
 {% endblock %}

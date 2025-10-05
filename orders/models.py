@@ -4,27 +4,51 @@ from django.db import models
 from django.db import models
 import uuid
 
-class OrdemServico(models.Model):
-  STATUS_PENDENTE  = 'PENDENTE'
-  STATUS_ANDAMENTO = 'ANDAMENTO'
-  STATUS_IMPEDIDO  = 'IMPEDIDO'
-  STATUS_ARQUIVADO = 'ARQUIVADO'
-  STATUS_CONCLUIDO = 'CONCLUIDO'
-  STATUS_CHOICES = [
-    (STATUS_PENDENTE, 'Pendente'),
-    (STATUS_ANDAMENTO, 'Em Andamento'),
-    (STATUS_IMPEDIDO, 'Impedido'),
-    (STATUS_ARQUIVADO, 'Arquivado'),
-    (STATUS_CONCLUIDO, 'Concluído'),
-  ]
+class Status(models.Model):
+  id            = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  descricao     = models.CharField(max_length=50, unique=True)
+  cor           = models.CharField(max_length=7)  # 7 digitos pois a cor precisa ser em formato hexadecimal
+  criado_em     = models.DateTimeField(auto_now_add=True)
+  atualizado_em = models.DateTimeField(auto_now=True)
 
+class OrdemServico(models.Model):
   id         = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-  cliente    = models.CharField(max_length=100)
-  veiculo    = models.CharField(max_length=100, blank=True)
+  cliente    = models.ForeignKey('Cliente', on_delete=models.CASCADE)
+  veiculo    = models.ForeignKey('Veiculo', on_delete=models.CASCADE)
   descricao  = models.TextField(blank=True)
-  status     = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_PENDENTE)
+  status     = models.ForeignKey('Status', on_delete=models.CASCADE)
   criado_em  = models.DateTimeField(auto_now_add=True)
   atualizado_em = models.DateTimeField(auto_now=True)
 
   def __str__(self):
     return f"{self.cliente} - {self.status}"
+  
+class Cliente(models.Model):
+  id            = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  nome          = models.CharField(max_length=100)
+  email         = models.EmailField(unique=True)
+  criado_em     = models.DateTimeField(auto_now_add=True)
+  atualizado_em = models.DateTimeField(auto_now=True)
+
+class Veiculo(models.Model):
+  id            = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  cliente       = models.ForeignKey('Cliente', on_delete=models.CASCADE)
+  marca         = models.CharField(max_length=50)
+  modelo        = models.CharField(max_length=50)
+  ano           = models.PositiveIntegerField()
+  placa         = models.CharField(max_length=20, unique=True)
+  criado_em     = models.DateTimeField(auto_now_add=True)
+  atualizado_em = models.DateTimeField(auto_now=True)
+
+class ResponsavelOS(models.Model):
+  id            = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  ordem_servico = models.ForeignKey('OrdemServico', on_delete=models.CASCADE)
+  mecanico      = models.ForeignKey('Mecanico', on_delete=models.CASCADE)
+  atribuido_em  = models.DateTimeField(auto_now_add=True)
+  
+class Mecanico(models.Model):
+  id            = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+  nome          = models.CharField(max_length=100)
+  email         = models.EmailField(unique=True)
+  criado_em     = models.DateTimeField(auto_now_add=True)
+  atualizado_em = models.DateTimeField(auto_now=True)

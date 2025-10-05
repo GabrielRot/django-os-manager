@@ -1,1 +1,91 @@
 {% extends 'orders/base.html' %}
+
+{% block content %}
+<div class="container">
+  <h2>
+    {% if is_edit %}
+      Editar Ordem de Serviço #{{ form.instance.pk }}
+    {% else %}
+      Nova Ordem de Serviço
+    {% endif %}
+  </h2>
+
+  <form method="POST" novalidate>
+    {% csrf_token %}
+    <!-- Campos renderizados automáticamente. Comentário by me mesmo e não por uma I.A -->
+    <!-- {{ form.as_p }} -->
+
+    <div class="mb-3">
+      <label for="id_cliente" class="form-label">Cliente</label>
+      <input 
+        type="text" 
+        name="cliente" 
+        id="id_cliente"
+        class="form-control {% if form.cliente.errors %}is-invalid{% endif %}" 
+        value="{{ form.cliente.value|default:'' }}"
+        maxlength="200"
+        required
+      >
+      {% for error in form.cliente.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="mb-3">
+      <label for="id_veiculo" class="form-label">Veículo</label>
+      <input
+        type="text"
+        name="veiculo"
+        id="id_veiculo"
+        class="form-control {% if form.veiculo.errors %}is-invalid{% endif %}"
+        value="{{ form.veiculo.value|default:'' }}"
+        maxlength="200"
+      >
+      {% for error in form.veiculo.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="mb-3">
+      <label for="id_descricao" class="form-label">Descrição</label>
+      <textarea 
+        name="descricao"
+        id="id_descricao"
+        class="form-control {% if form.descricao.errors %}is-invalid{% endif %}"
+        rows="4"
+      >
+        {{ form.descricao.value|default:''}}
+      </textarea>
+      {% for error in form.descricao.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <div class="mb-3">
+      <label for="id_status" class="form-label">Status</label>
+      <select
+        name="status"
+        id="id_status"
+        class="form-select {% if form.status.errors %}is-invalid{% endif %}"
+      >
+        {% for value, label in form.fields.status.choices %}
+          <option 
+            value="{{ value }}"
+            {% if form.status.value == value %}selected{% endif %}
+          >
+            {{ label }}
+          </option>
+        {% endfor %}
+      </select>
+      {% for error in form.status.errors %}
+        <div class="invalid-feedback">{{ error }}</div>
+      {% endfor %}
+    </div>
+
+    <button type="submit" class="btn btn-primary">
+      <span>{% if is_edit %}Atualizar{% else %}Criar{% endif %}</span>
+    </button>
+    <a href="{% url 'ordem-list' %}"  class="btn btn-secondary">Cancelar</a>
+  </form> 
+</div>
+{% endblock %}
