@@ -15,36 +15,43 @@
     <!-- Campos renderizados automáticamente. Comentário by me mesmo e não por uma I.A -->
     <!-- {{ form.as_p }} -->
 
-    <div class="mb-3">
-      <label for="id_cliente" class="form-label">Cliente</label>
-      <input 
-        type="text" 
-        name="cliente" 
-        id="id_cliente"
-        class="form-control {% if form.cliente.errors %}is-invalid{% endif %}" 
-        value="{{ form.cliente.value|default:'' }}"
-        maxlength="200"
-        required
-      >
-      {% for error in form.cliente.errors %}
-        <div class="invalid-feedback">{{ error }}</div>
-      {% endfor %}
-    </div>
-
-    <div class="mb-3">
-      <label for="id_veiculo" class="form-label">Veículo</label>
-      <input
-        type="text"
-        name="veiculo"
-        id="id_veiculo"
-        class="form-control {% if form.veiculo.errors %}is-invalid{% endif %}"
-        value="{{ form.veiculo.value|default:'' }}"
-        maxlength="200"
-      >
-      {% for error in form.veiculo.errors %}
-        <div class="invalid-feedback">{{ error }}</div>
-      {% endfor %}
-    </div>
+      <div class="mb-3">
+        <label for="id_cliente" class="form-label">Cliente</label>
+        <select
+          name="cliente"
+          id="id_cliente"
+          class="form-select {% if form.cliente.errors %}is-invalid{% endif %}"
+          required
+        >
+          <option value="" disabled {% if not form.cliente.value %}selected{% endif %}>Selecione um cliente</option>
+          {% for cliente in form.cliente.field.queryset %}
+            <option 
+              value="{{ cliente.id }}"
+              {% if form.cliente.value|stringformat:"s" == cliente.id|stringformat:"s" %}selected{% endif %}
+            >
+              {{ cliente.nome }}
+            </option>
+          {% endfor %}
+        </select>
+        {% for error in form.cliente.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <div class="mb-3">
+        <label for="id_veiculo" class="form-label">Veículo</label>
+        <select
+          name="veiculo"
+          id="id_veiculo"
+          class="form-select {% if form.veiculo.errors %}is-invalid{% endif %}"
+          required
+          data-selected="{{ form.veiculo.value }}"
+        >
+          <option value="" disabled {% if not form.veiculo.value %}selected{% endif %}>Selecione um veículo</option>
+        </select>
+        {% for error in form.veiculo.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
 
     <div class="mb-3">
       <label for="id_descricao" class="form-label">Descrição</label>
@@ -61,26 +68,30 @@
       {% endfor %}
     </div>
 
-    <div class="mb-3">
-      <label for="id_status" class="form-label">Status</label>
-      <select
-        name="status"
-        id="id_status"
-        class="form-select {% if form.status.errors %}is-invalid{% endif %}"
-      >
-        {% for value, label in form.fields.status.choices %}
-          <option 
-            value="{{ value }}"
-            {% if form.status.value == value %}selected{% endif %}
-          >
-            {{ label }}
-          </option>
+      <div class="mb-3">
+        <label for="id_status" class="form-label">Status</label>
+        <select
+          name="status"
+          id="id_status"
+          class="form-select {% if form.status.errors %}is-invalid{% endif %}"
+          required
+        >
+          <option value="" disabled {% if not form.status.value %}selected{% endif %}>Selecione um status</option>
+          {% for status_l in form.status.field.queryset %}
+            <option 
+              value="{{ status_l.id }}"
+              {% if form.status.value|stringformat:"s" == status_l.id|stringformat:"s" %}selected{% endif %}
+            >
+              <div>
+                <span class="badge" style="background-color: {{ status_l.cor }};">{{ status_l.descricao }}</span>
+              </div>
+            </option>
+          {% endfor %}
+        </select>
+        {% for error in form.status.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
         {% endfor %}
-      </select>
-      {% for error in form.status.errors %}
-        <div class="invalid-feedback">{{ error }}</div>
-      {% endfor %}
-    </div>
+      </div>
 
     <button type="submit" class="btn btn-primary">
       <span>{% if is_edit %}Atualizar{% else %}Criar{% endif %}</span>
@@ -88,4 +99,56 @@
     <a href="{% url 'ordem-list' %}"  class="btn btn-secondary">Cancelar</a>
   </form> 
 </div>
+
+<script>
+  $(document).ready(function() {
+    const clienteId = $('#id_cliente').val();
+    const veiculoSelecionado = $('#id_veiculo').data('selected');
+
+    if (clienteId) {
+      $.ajax({
+        url: `/veiculos/cliente/${clienteId}`,
+        success: function(data) {
+          const $veiculoSelect = $('#id_veiculo');
+
+          data.forEach((item) => {
+            const selected = (item.id == veiculoSelecionado) ? 'selected' : '';
+
+            $veiculoSelect.append(`<option value="${item.id}" ${selected}>${item.modelo} (${item.placa})</option>`)
+          });
+        },
+        error: function(error) {
+          alert(`Erro ao carregar veículos do cliente.\n${error}`);
+        }
+      });
+    }
+
+    $('#id_cliente').change(function() {
+      const clienteId      = $(this).val();
+      const $veiculoSelect = $('#id_veiculo');
+      
+      $veiculoSelect.empty();
+    
+      if (!clienteId) {
+        $veiculoSelect.append('<option value="" disabled>Selecione um veículo</option>');
+      }
+
+      $.ajax({
+        url: `/veiculos/cliente/${clienteId}/`,
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+          $veiculoSelect.append('<option value="" disabled>Selecione um veículo</option>');
+          
+          data.forEach((item) => {
+            $veiculoSelect.append(`<option value="${item.id}">${item.modelo} (${item.placa})</option>`);
+          });
+        },
+        error: function(error) {
+          alert('Erro ao carregar veículos do cliente.\n' + error);
+        }
+      });
+    });
+  });
+</script>
 {% endblock %}

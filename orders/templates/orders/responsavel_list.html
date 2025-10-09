@@ -1,0 +1,52 @@
+{% extends 'orders/base.html' %}
+{% block title %}Responsáveis da OS {{ ordem_servico.id }}{% endblock %}
+{% block content %}
+  
+  <a href="{% url 'ordem-list' %}" class="btn btn-light" title="Voltar">
+    <span class="fa fa-arrow-left"></span>
+  </a>
+  <h1>Lista de Responsáveis OS: {{ ordem_servico.id }}</h1>
+  <a href="{% url 'responsavel-create' ordem_servico.id %}" class="btn btn-primary mb-3">
+    <span class="fa fa-plus"></span>
+    <span>Novo Resposável</span>
+  </a>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Mecânico</th>
+        <th>Data de Associação</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for responsavel in responsaveis %}
+      <tr>
+        <td>{{ responsavel.mecanico.nome }}</td>
+        <td>{{ responsavel.atribuido_em|date:"d/m/Y H:i" }}</td>
+        <td>
+          <a href="{% url 'responsavel-edit' ordem_servico.id responsavel.id %}" class="btn btn-warning btn-sm">
+            <span class="fa fa-edit"></span> 
+            <span>Editar</span>
+          </a>
+          <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-url="{% url 'responsavel-delete' ordem_servico.id responsavel.id %}" onclick="setActionFormDeleteModal(this)">
+            <span class="fa fa-trash"></span>
+            <span>Excluir</span>
+          </button>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="3">
+          <div class="no-data-found-table" role="alert">
+            <span class="fa fa-search" style="font-size: inherit !important;"></span>
+            <span>Nenhum responsavel encontrado.</span>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+{% block modal_title %}Confirmar Exclusão{% endblock %}
+{% block modal_body %}Tem certeza que deseja excluir este responsável?{% endblock %}
+{% block btn_type %}danger{% endblock %}

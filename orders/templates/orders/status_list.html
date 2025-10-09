@@ -1,0 +1,53 @@
+{% extends 'orders/base.html' %}
+{% block title %}Status - OS Manager{% endblock %}
+
+{% block content %}
+  <h2 class="mb-4">Lista de Status</h2>
+  <a href="{% url 'status-create' %}" class="btn btn-primary mb-3">
+    <span class="fa fa-plus"></span>
+    Adicionar Status
+  </a>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Descrição</th>
+        <th>Cor</th>
+        <th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in status_list %}
+        <tr>
+          <td>{{ t.descricao }}</td>
+          <td>
+            <div>
+              <span class="badge" style="background-color: {{ t.cor }};">{{ t.cor }}</span>
+            </div>
+          </td>
+          <td>
+            <a href="{% url 'status-edit' t.pk %}" class="btn btn-sm btn-warning">
+              <span class="fa fa-edit"></span>
+              <span>Editar</span>
+            </a>
+            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-url="{% url 'status-delete' t.id %}" onclick="setActionFormDeleteModal(this)">
+              <span class="fa fa-trash"></span>
+              Excluir
+            </button>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="5">
+            <div class="no-data-found-table" role="alert">
+              <span class="fa fa-search" style="font-size: inherit !important;"></span>
+              <span>Nenhum status encontrado.</span>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+{% block modal_title %}Excluir Status{% endblock %}
+{% block modal_body %}Tem certeza que deseja excluir este status?{% endblock %}
+{% block btn_type %}danger{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "orders/base.html" %}
+{% block title %}Resposável - OS Manager{% endblock %}
+{% block content %}
+  <div class="container">
+    <h2>
+      {% if is_edit %}
+        Editar Responsável: #{{ form.instance.id }}
+      {% else %}
+        Novo Responsável
+      {% endif %}
+    </h2>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="id_mecanico" class="form-label">Mecânico</label>
+        <select id="id_mecanico" name="mecanico" class="form-select {% if form.mecanico.errors %}is-invalid{% endif %}">
+          <option value="">Selecione um mecânico</option>
+          {% for mecanico in form.mecanico.field.queryset %}
+            <option value="{{ mecanico.id }}"
+              {% if form.mecanico.value|stringformat:"s" == mecanico.id|stringformat:"s" %}selected{% endif %}>
+              {{ mecanico.nome }}
+            </option>
+          {% endfor %}
+        </select>
+        {% for error in form.mecanico.errors %}
+          <div class="invalid-feedback d-block">{{ error }}</div>
+        {% endfor %}
+      </div>
+      <button type="submit" class="btn btn-primary">
+        {% if is_edit %}Atualizar{% else %}Criar{% endif %}
+      </button>
+      <a href="{% url 'responsavel-list' ordem_servico.id %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+  </div>
+{% endblock %}

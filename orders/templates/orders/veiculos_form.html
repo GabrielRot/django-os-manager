@@ -90,7 +90,7 @@
           {% for cliente in form.cliente.field.queryset %}
             <option 
               value="{{ cliente.id }}"
-              {% if form.cliente.id == cliente.id|stringformat:"s" %}selected{% endif %}
+              {% if form.cliente.value|stringformat:"s" == cliente.id|stringformat:"s" %}selected{% endif %}
             >
               {{ cliente.nome }}
             </option>

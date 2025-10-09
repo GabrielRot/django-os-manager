@@ -1,0 +1,53 @@
+{% extends "orders/base.html" %}
+{% block title %}Mecânicos - OS Manager{% endblock %}
+{% block content %}
+  <div class="container">
+    <h2>
+      {% if is_edit %}
+        Editar Mecânico #{{ form.instance.pk }}
+      {% else %}
+        Novo Mecânico
+      {% endif %}
+    </h2>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+
+      <div class="mb-3">
+        <label for="id_nome" class="form-label">Nome</label>
+        <input
+          type="text"
+          name="nome"
+          id="id_nome"
+          class="form-control {% if form.nome.errors %}is-invalid{% endif %}"
+          value="{{ form.nome.value|default:'' }}"
+          maxlength="200"
+          required
+        >
+        {% for error in form.nome.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_email" class="form-label">E-mail</label>
+        <input
+          type="email"
+          name="email"
+          id="id_email"
+          class="form-control {% if form.email.errors %}is-invalid{% endif %}"
+          value="{{ form.email.value|default:'' }}"
+          maxlength="200"
+        >
+        {% for error in form.email.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        {% if is_edit %}Atualizar{% else %}Criar{% endif %}
+      </button>
+      <a href="{% url 'mecanico-list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+  </div>
+{% endblock %}

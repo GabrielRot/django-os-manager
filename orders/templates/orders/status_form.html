@@ -1,0 +1,54 @@
+{% extends 'orders/base.html' %}
+{% block title %}Status - OS Manager{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h2>
+      {% if is_edit %}
+        Editar Status #{{ form.instance.pk }}
+      {% else %}
+        Novo Status
+      {% endif %}
+    </h2>
+
+    <form method="POST" novalidate>
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="id_descricao" class="form-label">Descrição</label>
+        <input 
+          type="text" 
+          name="descricao" 
+          id="id_descricao"
+          class="form-control {% if form.descricao.errors %}is-invalid{% endif %}" 
+          value="{{ form.descricao.value|default:'' }}"
+          maxlength="50"
+          required
+        >
+        {% for error in form.descricao.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <div class="mb-3">
+        <label for="id_cor" class="form-label">Cor</label>
+        <input 
+          type="color" 
+          name="cor" 
+          id="id_cor"
+          class="form-control form-control form-control-color {% if form.cor.errors %}is-invalid{% endif %}" 
+          value="{{ form.cor.value|default:'' }}"
+          maxlength="7"
+          required
+        >
+        {% for error in form.cor.errors %}
+          <div class="invalid-feedback">{{ error }}</div>
+        {% endfor %}
+      </div>
+
+      <button type="submit" class="btn btn-primary">
+        {% if is_edit %}Atualizar{% else %}Criar{% endif %}
+      </button>
+      <a href="{% url 'status-list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+  </div>
+{% endblock %}

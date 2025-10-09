@@ -2,7 +2,10 @@
 {% block title %}Mecânicos - OS Manager{% endblock %}
 {% block content %}
   <h1>Lista de Mecânicos</h1>
-  <a href="{% url 'mecanico-create' %}" class="btn btn-primary">Novo Mecânico</a>
+  <a href="{% url 'mecanico-create' %}" class="btn btn-primary mb-3">
+    <span class="fa fa-plus"></span>
+    <span> Novo Mecânico</span>
+  </a>
   <table class="table">
     <thead>
       <tr>
@@ -19,8 +22,14 @@
           <td>{{ mecanico.nome }}</td>
           <td>{{ mecanico.email }}</td>
           <td>
-            <a href="{% url 'mecanico-edit' mecanico.id %}" class="btn btn-warning">Editar</a>
-            <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-delete-url="{% url 'mecanico-delete' mecanico.id %}" onclick="setActionFormDeleteModal(this)">Excluir</button>
+            <a href="{% url 'mecanico-edit' mecanico.id %}" class="btn btn-warning btn-sm">
+              <span class="fa fa-edit"></span> 
+              <span>Editar</span>
+            </a>
+            <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-url="{% url 'mecanico-delete' mecanico.id %}" onclick="setActionFormDeleteModal(this)">
+              <span class="fa fa-trash"></span>
+              <span>Excluir</span>
+            </button>
           </td>
         </tr>
       {% empty %}

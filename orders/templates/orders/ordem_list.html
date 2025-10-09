@@ -5,28 +5,37 @@
 
 <a href="{% url 'ordem-create' %}" class="btn btn-primary mb-3">
   <span class="fa fa-plus"></span>
-  Nova ordem de serviço
+  <span>Nova ordem de serviço</span>
 </a>
 
 <table class="table table-striped">
   <thead>
     <tr>
-      <th>ID</th>
+      <th>Descrição</th>
       <th>Cliente</th>
       <th>Veículo</th>
       <th>Status</th>
-      <th>Criado em</th>
+      <th></th>
       <th>Ações</th>
     </tr>
   </thead>
   <tbody>
     {% for ordem in ordens %}
       <tr>
-        <td>{{ ordem.id }}</td>
-        <td>{{ ordem.cliente }}</td>
-        <td>{{ ordem.veiculo }}</td>
-        <td>{{ ordem.get_status_display }}</td>
-        <td>{{ ordem.criado_em|date:"d/m/Y H:i" }}</td>
+        <td>{{ ordem.descricao }}</td>
+        <td>{{ ordem.cliente.nome }}</td>
+        <td>{{ ordem.veiculo.modelo }} ({{ ordem.veiculo.placa }})</td>
+        <td>
+          <div>
+            <span class="badge" style="background-color: {{ ordem.status.cor }};">{{ ordem.status.descricao }}</span>
+          </div>
+        </td>
+        <!-- <td>{{ ordem.criado_em|date:"d/m/Y H:i" }}</td> -->
+         <td>
+          <a href="{% url 'responsavel-list' ordem.id %}">
+            <span class="fa fa-users" title="Responsáveis"></span>
+          </a>
+         </td>
         <td>
           <a href="{% url 'ordem-edit' ordem.id %}" class="btn btn-sm btn-warning">
             <span class="fa fa-edit"></span>
@@ -34,17 +43,23 @@
           </a>
           <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-url="{% url 'ordem-delete' ordem.pk %}" onclick="setActionFormDeleteModal(this)">
             <span class="fa fa-trash"></span>
-            Excluir
+            <span>Excluir</span>
           </button>
       </td>
       </tr>
     {% empty %}
-       <div class="no-data-found-table" role="alert">
-          <span class="fa fa-search" style="font-size: inherit !important;"></span>
-          <span>Nenhuma ordem encontrada.</span>
-        </div>
+      <tr>
+        <td colspan="6">
+          <div class="no-data-found-table" role="alert">
+              <span class="fa fa-search" style="font-size: inherit !important;"></span>
+              <span>Nenhuma ordem encontrada.</span>
+          </div>
+        </td>
+      </tr>
     {% endfor %}
   </tbody>
 </table>
-<script src="{% static 'js/ordem-list.js' %}"></script>
 {% endblock %}
+{% block modal_title %}Excluir Ordem de Serviço{% endblock %}
+{% block modal_body %}Tem certeza que deseja excluir essa ordem de serviço?{% endblock %}
+{% block btn_type %}danger{% endblock %}

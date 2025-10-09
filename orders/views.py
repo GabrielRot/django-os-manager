@@ -1,6 +1,8 @@
 from django.urls import reverse_lazy
-from django.views.generic import ListView, CreateView, UpdateView
+from django.views.generic import ListView, CreateView, UpdateView, View
 from django.shortcuts import get_object_or_404, redirect
+from django.http import JsonResponse
+from django.db import IntegrityError
 from .models import *
 
 # Create your views here.
@@ -83,6 +85,11 @@ class VeiculoListView(ListView):
   context_object_name = 'veiculos'
   ordering            = ['-criado_em']
 
+def veiculoClienteView(request, cliente_pk):
+  veiculos      = Veiculo.objects.filter(cliente_id=cliente_pk).values('id', 'modelo', 'placa')
+  veiculos_list = list(veiculos)
+  return JsonResponse(veiculos_list, safe=False)
+
 class VeiculoCreateView(CreateView):
   model         = Veiculo
   fields        = ['cliente', 'marca', 'modelo', 'ano', 'placa'] 
@@ -127,10 +134,10 @@ class MecanicoCreateView(CreateView):
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)
     context['is_edit'] = False
-    return context
+    return context  
   
 class MecanicoUpdateView(UpdateView):
-  models        = Mecanico
+  model         = Mecanico
   fields        = ['nome', 'email']
   template_name = 'orders/mecanicos_form.html'
   success_url   = reverse_lazy('mecanico-list')
@@ -145,3 +152,104 @@ class MecanicoDeleteView(UpdateView):
     mecanico = get_object_or_404(Mecanico, pk=pk)
     mecanico.delete()
     return redirect('mecanico-list')
+  
+## Status Views
+class StatusListView(ListView):
+  model               = Status
+  template_name       = 'orders/status_list.html'
+  context_object_name = 'status_list'
+  ordering            = ['-criado_em']
+
+class StatusCreateView(CreateView):
+  model         = Status
+  fields        = ['descricao', 'cor']
+  template_name = 'orders/status_form.html'
+  success_url   = reverse_lazy('status-list')
+  
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['is_edit'] = False 
+    return context
+  
+class StatusUpdateView(UpdateView):
+  model         = Status
+  fields        = ['descricao', 'cor']
+  template_name = 'orders/status_form.html'
+  success_url   = reverse_lazy('status-list')
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['is_edit'] = True
+    return context
+  
+class StatusDeleteView(UpdateView):
+  def post(self, request, pk):
+    status = get_object_or_404(Status, pk=pk)
+    status.delete()
+    return redirect('status-list')
+  
+## Responsável OS View
+class ResponsavelListView(ListView):
+  model               = ResponsavelOS
+  template_name       = 'orders/responsavel_list.html'
+  context_object_name = 'responsaveis'
+
+  def get_queryset(self):
+    self.ordem_servico = get_object_or_404(OrdemServico, pk=self.kwargs['ordem_id'])
+    return ResponsavelOS.objects.filter(ordem_servico=self.ordem_servico).select_related('mecanico')
+  
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['ordem_servico'] = self.ordem_servico
+    return context
+  
+  
+class ResponsavelCreateView(CreateView):
+  model         = ResponsavelOS
+  fields        = ['mecanico']
+  template_name = 'orders/responsavel_form.html'
+
+  def get_success_url(self):
+    return reverse_lazy('responsavel-list', kwargs={'ordem_id': self.kwargs['ordem_id']})
+  
+  def form_valid(self, form):
+    form.instance.ordem_servico = get_object_or_404(OrdemServico, pk=self.kwargs['ordem_id'])
+    return super().form_valid(form)
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['ordem_servico']   = get_object_or_404(OrdemServico, pk=self.kwargs['ordem_id'])
+    context['is_edit'] = False
+
+    return context
+  
+class ResponsavelUpdateView(UpdateView):
+  model         = ResponsavelOS
+  fields        = ['mecanico']
+  template_name = 'orders/responsavel_form.html'
+
+  def get_queryset(self):
+    ordem = get_object_or_404(OrdemServico, pk=self.kwargs['ordem_id'])
+    return ResponsavelOS.objects.filter(ordem_servico=ordem)
+  
+  def get_success_url(self):
+    return reverse_lazy('responsavel-list', kwargs={'ordem_id': self.kwargs['ordem_id']})
+
+  def get_context_data(self, **kwargs):
+    context = super().get_context_data(**kwargs)
+    context['ordem_servico'] = get_object_or_404(OrdemServico, pk=self.kwargs['ordem_id'])
+    context['is_edit'] = True
+    return context
+  
+  def form_valid(self, form):
+    try:
+      return super().form_valid(form)
+    except IntegrityError:
+      form.add_error('mecanico', 'Este mecânico já está vinculado a esta OS.')
+      return self.form_invalid(form)
+    
+class ResponsavelDeleteView(View):
+    def post(self, request, ordem_id, pk):
+      responsavel = get_object_or_404(ResponsavelOS, pk=pk, ordem_servico_id= ordem_id)
+      responsavel.delete()
+      return redirect('responsavel-list', ordem_id=ordem_id)
