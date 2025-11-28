@@ -3,6 +3,7 @@ from django.views.generic import ListView, CreateView, UpdateView, View
 from django.shortcuts import get_object_or_404, redirect
 from django.http import JsonResponse
 from django.db import IntegrityError
+from django.db.models import Q
 from .models import *
 
 # Create your views here.
@@ -13,6 +14,24 @@ class OrdemListView(ListView):
   template_name = 'orders/ordem_list.html'
   context_object_name = 'ordens'
   ordering = ['-criado_em']
+  paginate_by         = 5
+
+  def get_queryset(self):
+    queryset = super().get_queryset()
+
+    search   = self.request.GET.get('search')
+
+    if search:
+      queryset = queryset.filter(
+        Q(descricao__contains = search)       |
+        Q(cliente__nome__contains = search)   |
+        Q(veiculo__modelo__contains = search) |
+        Q(veiculo__placa__contains = search)  |
+        Q(veiculo__modelo__contains = search) |
+        Q(status__descricao__contains = search) 
+      )
+
+    return queryset
 
 class OrdemCreateView(CreateView):
   model = OrdemServico
@@ -49,6 +68,20 @@ class ClienteListView(ListView):
   template_name       = 'orders/clientes_list.html'
   context_object_name = 'clientes'
   ordering            = ['-criado_em']
+  paginate_by         = 5
+
+  def get_queryset(self):
+    queryset = super().get_queryset()
+
+    search   = self.request.GET.get('search')
+
+    if search:
+      queryset = queryset.filter(
+        Q(nome__contains = search) |
+        Q(email__contains = search)
+      )
+
+    return queryset
 
 class ClienteCreateView(CreateView):
   model         = Cliente
@@ -84,6 +117,22 @@ class VeiculoListView(ListView):
   template_name       = 'orders/veiculos_list.html'
   context_object_name = 'veiculos'
   ordering            = ['-criado_em']
+  paginate_by         = 5
+
+  def get_queryset(self):
+    queryset = super().get_queryset()
+
+    search   = self.request.GET.get('search')
+
+    if search:
+      queryset = queryset.filter(
+        Q(placa__contains = search)  |
+        Q(modelo__contains = search) |
+        Q(ano__contains = search)    |
+        Q(cliente__nome__contains = search)
+      )
+
+    return queryset
 
 def veiculoClienteView(request, cliente_pk):
   veiculos      = Veiculo.objects.filter(cliente_id=cliente_pk).values('id', 'modelo', 'placa')
@@ -124,6 +173,20 @@ class MecanicoListView(ListView):
   template_name       = 'orders/mecanicos_list.html'
   context_object_name = 'mecanicos'
   ordering            = ['-criado_em']
+  paginate_by         = 5
+
+  def get_queryset(self):
+    queryset = super().get_queryset()
+
+    search   = self.request.GET.get('search')
+
+    if search:
+      queryset = queryset.filter(
+        Q(nome__contains = search) |
+        Q(email__contains = search)
+      )
+
+    return queryset
   
 class MecanicoCreateView(CreateView):
   model         = Mecanico
@@ -159,6 +222,20 @@ class StatusListView(ListView):
   template_name       = 'orders/status_list.html'
   context_object_name = 'status_list'
   ordering            = ['-criado_em']
+  paginate_by         = 5
+
+  def get_queryset(self):
+    queryset = super().get_queryset()
+
+    search   = self.request.GET.get('search')
+
+    if search:
+      queryset = queryset.filter(
+        Q(descricao__contains = search) |
+        Q(cor__contains = search)
+      )
+
+    return queryset
 
 class StatusCreateView(CreateView):
   model         = Status
@@ -193,10 +270,32 @@ class ResponsavelListView(ListView):
   model               = ResponsavelOS
   template_name       = 'orders/responsavel_list.html'
   context_object_name = 'responsaveis'
+  paginate_by         = 5
 
   def get_queryset(self):
-    self.ordem_servico = get_object_or_404(OrdemServico, pk=self.kwargs['ordem_id'])
-    return ResponsavelOS.objects.filter(ordem_servico=self.ordem_servico).select_related('mecanico')
+    self.ordem_servico = get_object_or_404(
+        OrdemServico, 
+        pk=self.kwargs['ordem_id']
+    )
+
+    queryset = (
+        ResponsavelOS.objects
+        .filter(ordem_servico=self.ordem_servico)
+        .select_related('mecanico')
+    )
+
+    search = self.request.GET.get('search')
+
+    if search:
+        queryset = queryset.filter(
+            Q(mecanico__nome__icontains=search)
+        )
+
+    return queryset
+
+  # def get_queryset(self):
+  #   self.ordem_servico = get_object_or_404(OrdemServico, pk=self.kwargs['ordem_id'])
+  #   return ResponsavelOS.objects.filter(ordem_servico=self.ordem_servico).select_related('mecanico')
   
   def get_context_data(self, **kwargs):
     context = super().get_context_data(**kwargs)

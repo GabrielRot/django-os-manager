@@ -7,6 +7,53 @@
     <span class="fa fa-plus"></span>
     Adicionar Veículo
   </a>
+  <form method="GET" class="mb-3">
+    <div class="input-group">
+      <input type="text" name="search" class="form-control" placeholder="Buscar..." value="{{ request.GET.search }}">
+      <button class="btn btn-primary">
+        <span class="fa fa-search"></span> Buscar
+      </button>
+    </div>
+  </form>
+  {% if is_paginated %}
+    <nav>
+      <ul class="pagination">
+
+        {% if page_obj.has_previous %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}&search={{ request.GET.search }}">Anterior</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Anterior</span>
+          </li>
+        {% endif %}
+
+        {% for num in paginator.page_range %}
+          {% if num == page_obj.number %}
+            <li class="page-item active">
+              <span class="page-link">{{ num }}</span>
+            </li>
+          {% else %}
+            <li class="page-item">
+              <a class="page-link" href="?page={{ num }}&search={{ request.GET.search }}">{{ num }}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+          <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}&search={{ request.GET.search }}">Próxima</a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link">Próxima</span>
+          </li>
+        {% endif %}
+
+      </ul>
+    </nav>
+  {% endif %}
   <table class="table table-striped">
     <thead>
       <tr>
